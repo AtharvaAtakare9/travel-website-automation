@@ -15,6 +15,32 @@ pipeline {
             }
         }
 
+        /* ===================== SONARQUBE STAGE ===================== */
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+
+                    withSonarQubeEnv('sonarqube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 2, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
+
+        /* ===================== DOCKER BUILD ===================== */
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -24,6 +50,7 @@ pipeline {
             }
         }
 
+        /* ===================== DOCKER HUB LOGIN ===================== */
         stage('DockerHub Login') {
             steps {
                 withCredentials([
@@ -40,6 +67,7 @@ pipeline {
             }
         }
 
+        /* ===================== PUSH IMAGE ===================== */
         stage('Push Image to DockerHub') {
             steps {
                 sh """
@@ -49,6 +77,7 @@ pipeline {
             }
         }
 
+        /* ===================== DEPLOY ===================== */
         stage('Remove Existing Container') {
             steps {
                 sh '''
@@ -68,6 +97,7 @@ pipeline {
             }
         }
 
+        /* ===================== HEALTH CHECK ===================== */
         stage('Verify Deployment') {
             steps {
                 sh '''
