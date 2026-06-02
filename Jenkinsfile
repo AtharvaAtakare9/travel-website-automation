@@ -17,9 +17,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                docker build -t $IMAGE_NAME:${BUILD_NUMBER} .
-                '''
+                sh """
+                docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
+                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
+                """
             }
         }
 
@@ -28,44 +29,51 @@ pipeline {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
                     sh '''
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                     '''
                 }
             }
         }
 
-        stage('Push Image') {
+        stage('Push Image to DockerHub') {
             steps {
-                sh '''
-                docker push $IMAGE_NAME:${BUILD_NUMBER}
-
-                docker tag $IMAGE_NAME:${BUILD_NUMBER} $IMAGE_NAME:latest
-
-                docker push $IMAGE_NAME:latest
-                '''
+                sh """
+                docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                docker push ${IMAGE_NAME}:latest
+                """
             }
         }
 
         stage('Remove Existing Container') {
             steps {
                 sh '''
-                docker rm -f $CONTAINER_NAME || true
+                docker rm -f travel-website-app || true
                 '''
             }
         }
 
         stage('Deploy Application') {
             steps {
-                sh '''
+                sh """
                 docker run -d \
-                --name $CONTAINER_NAME \
-                -p $APP_PORT:80 \
-                $IMAGE_NAME:${BUILD_NUMBER}
+                --name ${CONTAINER_NAME} \
+                -p ${APP_PORT}:80 \
+                ${IMAGE_NAME}:${BUILD_NUMBER}
+                """
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                sleep 10
+                docker ps
+                curl -I http://localhost:8081
                 '''
             }
         }
@@ -73,11 +81,16 @@ pipeline {
 
     post {
         success {
-            echo 'DockerHub Push Successful'
+            echo '====================================='
+            echo 'Travel Website Deployment Successful'
+            echo '====================================='
         }
 
         failure {
-            echo 'Pipeline Failed'
+            echo '====================================='
+            echo 'Travel Website Deployment Failed'
+            echo '====================================='
+            sh 'docker ps -a || true'
         }
     }
 }
