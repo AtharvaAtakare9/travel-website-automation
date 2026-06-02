@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 environment {
     IMAGE_NAME = "travel-website-automation"
     CONTAINER_NAME = "travel-website-app"
