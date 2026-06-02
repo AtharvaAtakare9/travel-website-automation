@@ -9,13 +9,14 @@ pipeline {
 
     stages {
 
+        /* ===================== CHECKOUT ===================== */
         stage('Checkout Source Code') {
             steps {
                 checkout scm
             }
         }
 
-        /* ===================== SONARQUBE STAGE ===================== */
+        /* ===================== SONARQUBE ===================== */
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -30,19 +31,21 @@ pipeline {
             }
         }
 
+        /* ===================== QUALITY GATE ===================== */
         stage('Quality Gate') {
             steps {
                 script {
                     timeout(time: 5, unit: 'MINUTES') {
-                def qg = waitForQualityGate()
-                if (qg.status != 'OK') {
-                    error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+                        }
                     }
                 }
             }
         }
 
-        /* ===================== DOCKER BUILD ===================== */
+        /* ===================== BUILD IMAGE ===================== */
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -52,7 +55,7 @@ pipeline {
             }
         }
 
-        /* ===================== DOCKER HUB LOGIN ===================== */
+        /* ===================== DOCKER LOGIN ===================== */
         stage('DockerHub Login') {
             steps {
                 withCredentials([
@@ -111,6 +114,7 @@ pipeline {
         }
     }
 
+    /* ===================== POST ACTIONS ===================== */
     post {
         success {
             echo '====================================='
