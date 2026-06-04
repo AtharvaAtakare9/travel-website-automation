@@ -1,4 +1,3 @@
---
 
 # 🚀 Travel Website CI/CD Pipeline (DevOps Project)
 
@@ -36,12 +35,9 @@ GitHub → Jenkins → SonarQube → Trivy Scan → Docker Build → DockerHub �
 
 📸 Screenshot:
 
-```
-
 ![GitHub Repository](Screenshots/github-repo.png)
 
 ---
-
 
 ## 2️⃣ Jenkins (Automation Server)
 
@@ -50,10 +46,9 @@ GitHub → Jenkins → SonarQube → Trivy Scan → Docker Build → DockerHub �
 
 📸 Screenshot:
 
-```
-![GitHub Repo](Screenshots/jenkins.png)
+![Jenkins Pipeline](Screenshots/jenkins.png)
 
-```
+---
 
 ## 3️⃣ SonarQube Analysis
 
@@ -61,20 +56,25 @@ GitHub → Jenkins → SonarQube → Trivy Scan → Docker Build → DockerHub �
 * Detects:
 
   * Bugs
-  * Code smells
-  * Security vulnerabilities
+  * Code Smells
+  * Security Vulnerabilities
 
-📌 Quality Gate ensures only clean code proceeds
+📌 Quality Gate ensures only clean code proceeds.
 
 📸 Screenshot:
 
-```
-![Sonarqube](Screenshots/sonarqube.png)
-```
+![SonarQube Analysis](Screenshots/sonarqube.png)
 
 ---
 
-## 4 Docker Image Build
+## 4️⃣ Trivy Security Scan
+
+* Scans Docker images for vulnerabilities
+* Detects security issues before deployment
+
+
+
+## 5️⃣ Docker Image Build
 
 * Application is containerized using Docker
 * Image is tagged with build number
@@ -85,22 +85,18 @@ docker build -t travel-website:${BUILD_NUMBER} .
 
 📸 Screenshot:
 
-```
-![docker-build](Screenshots/docker-build.png)
-```
+![Docker Build](Screenshots/docker-build.png)
 
 ---
 
 ## 6️⃣ DockerHub Push
 
 * Docker image pushed to DockerHub registry
-* Versioning handled using build number + latest tag
+* Versioning handled using build number and latest tag
 
 📸 Screenshot:
 
-```
-![GitHub Repo](Screenshots/docker-hub.png)
-```
+![DockerHub Push](Screenshots/docker-hub.png)
 
 ---
 
@@ -115,9 +111,7 @@ docker run -d -p 8081:80 travel-website
 
 📸 Screenshot:
 
-```
-![docker ps](Screenshots/docker_ps.png)
-```
+![Docker Deployment](Screenshots/docker_ps.png)
 
 ---
 
@@ -132,9 +126,7 @@ curl http://localhost:8081
 
 📸 Screenshot:
 
-```
-![output](Screenshots/localhost.png)
-```
+![Application Output](Screenshots/localhost.png)
 
 ---
 
@@ -142,32 +134,33 @@ curl http://localhost:8081
 
 | Credential ID   | Purpose                  |
 | --------------- | ------------------------ |
-| dockerhub-creds | Docker Hub login         |
-| sonar-token     | SonarQube authentication |
+| dockerhub-creds | DockerHub Login          |
+| sonar-token     | SonarQube Authentication |
 
 ---
 
 # 📊 Pipeline Features
 
-✔ Fully Automated CI/CD
-✔ Code Quality Check (SonarQube)
-✔ Security Scanning (Trivy)
-✔ Docker Containerization
-✔ Auto Deployment
-✔ Health Verification
+* ✔ Fully Automated CI/CD
+* ✔ Code Quality Check (SonarQube)
+* ✔ Security Scanning (Trivy)
+* ✔ Docker Containerization
+* ✔ DockerHub Integration
+* ✔ Auto Deployment
+* ✔ Health Verification
 
 ---
 
 # 🚀 How to Run Project
 
 ```bash
-# 1. Clone repo
+# Clone Repository
 git clone https://github.com/your-repo.git
 
-# 2. Open Jenkins
+# Open Jenkins
 http://<EC2-IP>:8080
 
-# 3. Run pipeline
+# Run Pipeline
 Click "Build Now"
 ```
 
@@ -175,7 +168,7 @@ Click "Build Now"
 
 # 📸 Final Output
 
-```
+```text
 Application runs on:
 http://<EC2-IP>:8081
 ```
@@ -184,14 +177,10 @@ http://<EC2-IP>:8081
 
 # 🏆 Key Learning Outcomes
 
-* CI/CD pipeline automation
-* Jenkins pipeline scripting
-* Docker container lifecycle
-* DevSecOps basics (Trivy integration)
-* Code quality enforcement (SonarQube)
-* Real-world deployment workflow
-
----
-
-
+* CI/CD Pipeline Automation
+* Jenkins Pipeline Scripting
+* Docker Container Lifecycle Management
+* DevSecOps Basics (Trivy Integration)
+* Code Quality Enforcement using SonarQube
+* Real-world Deployment Workflow
 
